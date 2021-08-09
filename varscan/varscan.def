@@ -73,7 +73,7 @@ From: default/alpine:3.14.0
 %labels
   Author 25492070+MillironX@users.noreply.github.com
   SoftwareVersion v2.4.4
-  SingularityDefinitionVersion 1
+  SingularityDefinitionVersion 2
 
 %help
   VarScan
