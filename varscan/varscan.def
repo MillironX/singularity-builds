@@ -2,8 +2,37 @@ Bootstrap: library
 From: default/alpine:3.14.0
 
 %post
-  # Install java and bash (for Nextflow)
-  apk add --no-cache openjdk8 bash
+  # Part 1: Install Samtools
+  # ========================
+
+  # Get the actual dependencies
+  apk add --no-cache ncurses libbz2 xz zlib
+
+  # Get the build dependencies
+  apk add --no-cache --virtual .build-deps ncurses-dev musl-dev g++ make zlib-dev bzip2-dev xz-dev
+
+  # Make versioning easier
+  SAMTOOLS_VERSION='1.13'
+
+  # Download the source tarball and build
+  cd /tmp || exit 1
+  wget https://github.com/samtools/samtools/releases/download/$SAMTOOLS_VERSION/samtools-$SAMTOOLS_VERSION.tar.bz2
+  tar xjvf samtools-$SAMTOOLS_VERSION.tar.bz2
+  cd samtools-$SAMTOOLS_VERSION || exit 1
+  ./configure
+  make && make install
+  cd .. || exit 1
+  rm -rf samtools-$SAMTOOLS_VERSION*
+  cd || exit 1
+
+  # Cleanup build packages
+  apk del --no-cache .build-deps
+
+  # Part 2: Install VarScan
+  # ========================
+
+  # Install java
+  apk add --no-cache openjdk8
 
   # Make versioning easier
   VARSCAN_VERSION='v2.4.4'
@@ -16,10 +45,14 @@ From: default/alpine:3.14.0
   echo "java -jar /opt/varscan.jar \"\$@\"" >> /usr/local/bin/varscan
   chmod +x /usr/local/bin/varscan
 
+  # Part 3: Install Nextflow dependencies
+  # =====================================
+  apk add --no-cache bash
+
 %test
   cat << "EOF" > /tmp/singularity-test.sh
   #!/bin/bash
-  CMDS=('bash' 'ps' 'java' 'varscan')
+  CMDS=('bash' 'ps' 'java' 'varscan' 'samtools')
   for CMD in "${CMDS[@]}"; do
     if ! command -v "$CMD"; then
       echo "command $CMD not found!"
