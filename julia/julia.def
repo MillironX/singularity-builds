@@ -4,7 +4,7 @@ From: default/alpine:3.14.0
 %post
   # Install dependencies
   apk add --no-cache bash
-  apd add --no-cache --virtual .build-deps gpg curl
+  apk add --no-cache --virtual .build-deps gnupg curl
 
   # Make our lives easier by declaring some constants
   export JULIA_GPG="3673DF529D9049477F76B37566E3C7DC03D6E495"
@@ -17,8 +17,8 @@ From: default/alpine:3.14.0
 
   # Download Julia
   export folder="$(echo "$JULIA_VERSION" | cut -d. -f1-2)"
-  curl -fL -o julia.tar.gz.asc "https://julialang-s3.julialang.org/bin/musl/${dirArch}/${folder}/julia-${JULIA_VERSION}-linux-${tarArch}.tar.gz.asc"
-  curl -fL -o julia.tar.gz     "https://julialang-s3.julialang.org/bin/musl/${dirArch}/${folder}/julia-${JULIA_VERSION}-linux-${tarArch}.tar.gz"
+  curl -fL -o julia.tar.gz.asc "https://julialang-s3.julialang.org/bin/musl/${dirArch}/${folder}/julia-${JULIA_VERSION}-musl-${tarArch}.tar.gz.asc"
+  curl -fL -o julia.tar.gz     "https://julialang-s3.julialang.org/bin/musl/${dirArch}/${folder}/julia-${JULIA_VERSION}-musl-${tarArch}.tar.gz"
 
   # Security check step 1: verify via sha256
   echo "${sha256} *julia.tar.gz" | sha256sum -c -
