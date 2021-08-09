@@ -1,0 +1,60 @@
+Bootstrap: library
+From: default/alpine:3.14.0
+
+%post
+  # Install java and bash (for Nextflow)
+  apk add --no-cache openjdk8 bash
+
+  # Make versioning easier
+  VARSCAN_VERSION='v2.4.4'
+
+  # Download varscan
+  wget https://github.com/dkoboldt/varscan/raw/master/VarScan.v2.4.4.jar -O /opt/varscan.jar
+
+  # Create a shim for varscan
+  echo "#!/bin/bash" > /usr/local/bin/varscan
+  echo "java -jar /opt/varscan.jar \"\$@\"" >> /usr/local/bin/varscan
+  chmod +x /usr/local/bin/varscan
+
+%test
+  cat << "EOF" > /tmp/singularity-test.sh
+  #!/bin/bash
+  CMDS=('bash' 'ps' 'java' 'varscan')
+  for CMD in "${CMDS[@]}"; do
+    if ! command -v "$CMD"; then
+      echo "command $CMD not found!"
+      FAILED_TESTS=1
+    fi
+  done
+  # Abort if a test failed
+  if [ -n "$FAILED_TESTS" ]; then
+    exit 1
+  fi
+  EOF
+  chmod +x /tmp/singularity-test.sh
+  bash /tmp/singularity-test.sh
+
+%runscript
+  varscan "$@"
+
+%labels
+  Author 25492070+MillironX@users.noreply.github.com
+  SoftwareVersion v2.4.4
+  SingularityDefinitionVersion 1
+
+%help
+  VarScan
+  =======
+
+  VarScan is a platform-independent mutation caller for targeted, exome, and
+  whole-genome resequencing data generated on Illumina, SOLiD, Life/PGM,
+  Roche/454, and similar instruments. It can be used to detect different types
+  of variation:
+  - Germline variants (SNPs an dindels) in individual samples or pools of samples.
+  - Multi-sample variants (shared or private) in multi-sample datasets (with mpileup).
+  - Somatic mutations, LOH events, and germline variants in tumor-normal pairs.
+  - Somatic copy number alterations (CNAs) in tumor-normal exome data.
+
+  For more help, see
+  - <https://dkoboldt.github.io/varscan/>
+  - <https://github.com/MillironX/singularity-builds>
