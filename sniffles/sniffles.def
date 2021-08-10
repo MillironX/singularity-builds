@@ -1,20 +1,19 @@
 Bootstrap: library
-From: default/alpine:3.14.0
+From: default/debian:buster
 
 %post
   # Declare version variable
   export SNIFFLES_VERSION='1.0.12'
   export SNIFFLES_TAG="v${SNIFFLES_VERSION}b"
 
-  # Install build dependencies
-  apk add --no-cache --virtual .build-deps \
-    git cmake make gcc g++ zlib-dev
-
-  # Install real dependencies
-  apk add --no-cache bash
+  # Install dependencies
+  apt-get update
+  apt-get install -y --no-install-recommends \
+    git cmake make gcc g++ libghc-zlib-dev bash procps build-essential
 
   # Get Sniffles
   cd /opt || exit 1
+  git config --global http.sslverify false
   git clone https://github.com/fritzsedlazeck/Sniffles.git
   cd Sniffles || exit 1
   git checkout $SNIFFLES_TAG
@@ -24,16 +23,17 @@ From: default/alpine:3.14.0
   cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
   make
 
-  # Add Sniffles to PATH
-  export PATH=/opt/Sniffles/bin/sniffles-core-$SNIFFLES_VERSION:$PATH
+  # Install Sniffles
+  cd ../bin/sniffles-core-$SNIFFLES_VERSION || exit 1
+  install -D -m 0755 sniffles -t /usr/local/bin
+  install -D -m 0755 sniffles-debug -t /usr/local/bin
+
+  # Cleanup repo
+  cd ../.. || exit 1
+  rm -rf Sniffles
 
   # Cleanup packages
-  apk del --no-cache .build-deps
-
-%environment
-  export SNIFFLES_VERSION='1.0.12'
-  export SNIFFLES_TAG="v${SNIFFLES_VERSION}b"
-  export PATH=/opt/Sniffles/bin/sniffles-core-$SNIFFLES_VERSION:$PATH
+  rm -rf /var/lib/apt/lists/*
 
 %test
   command -v bash
@@ -47,7 +47,7 @@ From: default/alpine:3.14.0
 %labels
   Author 25492070+MillironX@users.noreply.github.com
   SoftwareVersion v1.0.12b
-  SingularityDefinitionVersion 2
+  SingularityDefinitionVersion 3
 
 %help
   Sniffles
