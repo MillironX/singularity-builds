@@ -11,7 +11,7 @@ From: default/centos:latest
   dnf config-manager --set-enabled PowerTools
 
   # Operating dependencies
-  dnf --setopt=install_weak_deps=False install procps perl python3 -y
+  dnf --setopt=install_weak_deps=False install procps perl python3 which -y
 
   # Building dependencies
   dnf groupinstall 'Development Tools' -y
@@ -152,7 +152,7 @@ From: default/centos:latest
 %labels
   Author 25492070+MillironX@users.noreply.github.com
   SoftwareVersion 1.160490
-  SingularityDefinitionVersion 1
+  SingularityDefinitionVersion 2
 
 %help
   Assembly Improvement
