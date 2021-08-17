@@ -1,0 +1,74 @@
+Bootstrap: library
+From: millironx/default/samtools:1.13
+
+%post
+  # Get the actual dependencies
+  apk add --no-cache perl
+
+  # Get the build dependencies
+  apk add --no-cache --virtual .build-deps musl-dev g++ make zlib-dev
+
+  # Part 1: Install minimap2
+  # ========================
+
+  # Make versioning easier
+  MINIMAP2_VERSION='2.22'
+
+  # Download the source tarball and build
+  cd /tmp || exit 1
+  wget https://github.com/lh3/minimap2/releases/download/v$MINIMAP2_VERSION/minimap2-$MINIMAP2_VERSION.tar.bz2
+  tar xjvf minimap2-$MINIMAP2_VERSION.tar.bz2
+  cd minimap2-$MINIMAP2_VERSION || exit 1
+  make
+  install -D -m 0755 minimap2 -t /usr/bin
+  cd .. || exit 1
+  rm -rf minimap2-$MINIMAP2_VERSION*
+  cd || exit 1
+
+  # Part 2: Install samclip
+  SAMCLIP_VERSION='0.4.0'
+  cd /usr/bin || exit 1
+  wget https://raw.githubusercontent.com/tseemann/samclip/v$SAMCLIP_VERSION/samclip
+  chmod a+x samclip
+  cd || exit 1
+
+  # Cleanup build packages
+  apk del --no-cache .build-deps
+
+%test
+  test_command () {
+    if ! command -v "${1}"; then
+      echo "command ${1} not found!"
+      export FAILED_TESTS=1
+    fi
+  }
+
+  test_command bash
+  test_command ps
+  test_command samtools
+  test_command minimap2
+  test_command samclip
+
+  if [ -n "$FAILED_TESTS" ]; then
+    exit 1
+  fi
+
+%runscript
+  minimap2 "$@"
+
+%labels
+  Author 25492070+MillironX@users.noreply.github.com
+  SoftwareVersion 2.22
+  SingularityDefinitionVersion 1
+
+%help
+  minimap2
+  ========
+
+  Minimap2 is a versatile sequence alignment program that aligns DNA or mRNA
+  sequences against a large reference database.
+
+  For more help, see
+  - <https://lh3.github.io/minimap2/>
+  - <https://github.com/lh3/minimap2>
+  - <https://github.com/MillironX/singularity-builds>
