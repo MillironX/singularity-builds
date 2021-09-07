@@ -1,0 +1,57 @@
+Bootstrap: library
+From: default/alpine:3.14.0
+
+%post
+  # Get the actual dependencies
+  apk add --no-cache zlib bash
+
+  # Get the build dependencies
+  apk add --no-cache --virtual .build-deps musl-dev g++ make zlib-dev bzip2-dev xz-dev curl-dev
+
+  # Make versioning easier
+  HTSLIB_VERSION='1.13'
+
+  # Download the source tarball and build
+  cd /tmp || exit 1
+  wget https://github.com/samtools/htslib/releases/download/$HTSLIB_VERSION/htslib-$HTSLIB_VERSION.tar.bz2
+  tar xjvf htslib-$HTSLIB_VERSION.tar.bz2
+  cd htslib-$HTSLIB_VERSION || exit 1
+  make && make install
+  cd .. || exit 1
+  rm -rf htslib-$SAMTOOLS_VERSION*
+  cd || exit 1
+
+  # Cleanup build packages
+  apk del --no-cache .build-deps
+
+%test
+  test_command () {
+    if ! command -v "${1}"; then
+      echo "command ${1} not found!"
+      export FAILED_TESTS=1
+    fi
+  }
+
+  test_command bash
+  test_command ps
+
+  if [ -n "$FAILED_TESTS" ]; then
+    exit 1
+  fi
+
+%labels
+  Author 25492070+MillironX@users.noreply.github.com
+  SoftwareVersion 1.13
+  SingularityDefinitionVersion 1
+
+%help
+  HTSlib
+  ======
+
+  HTSlib is an implementation of a unified C library for accessing common file
+  formats, such as SAM, CRAM and VCF, used for high-throughput sequencing data,
+  and is the core library used by samtools and bcftools.
+
+  For more help, see
+  - <https://www.htslib.org>
+  - <https://github.com/MillironX/singularity-builds>
