@@ -3,7 +3,7 @@ From: default/alpine:3.14.0
 
 %post
   # Get the actual dependencies
-  apk add --no-cache zlib bash
+  apk add --no-cache zlib bash libcurl
 
   # Get the build dependencies
   apk add --no-cache --virtual .build-deps musl-dev g++ make zlib-dev bzip2-dev xz-dev curl-dev
@@ -42,7 +42,7 @@ From: default/alpine:3.14.0
 %labels
   Author 25492070+MillironX@users.noreply.github.com
   SoftwareVersion 1.13
-  SingularityDefinitionVersion 1
+  SingularityDefinitionVersion 2
 
 %help
   HTSlib
