@@ -1,3 +1,11 @@
 {
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "search.exclude": {
+        "**/**/*.sif": true,
+        "**/**/build-temp-*": true
+    },
+    "files.watcherExclude": {
+        "**/**/*.sif": true,
+        "**/**/build-temp-*": true
+    }
 }
