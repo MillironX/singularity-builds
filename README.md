@@ -49,6 +49,14 @@ images are available on the [Sylabs Cloud Library] for easy access.
 All of these images are tested for Nextflow and Singularity compatability, and
 are updated on a regular basis. I've even contributed to their repository.
 
+### Niema Moshiri's Dockerfiles
+
+[:octocat: GitHub](https://github.com/Niema-Docker) -
+[:whale: Docker hub](https://hub.docker.com/u/niemasd)
+
+Slim bioinformatics images based on Alpine Linux with useful (but optional)
+common combinations.
+
 ### Biocontainers Registry
 
 [:globe_with_meridians: Website](https://biocontainers.pro/) -
@@ -57,6 +65,14 @@ are updated on a regular basis. I've even contributed to their repository.
 
 Most of these images are already in Singularity format, and there are _a lot_ of
 tools for the picking here.
+
+### McDonnell Genome Institute
+
+[:octocat: GitHub](https://github.com/orgs/genome/repositories?language=dockerfile) -
+[:whale: Docker hub](https://hub.docker.com/u/mgibio)
+
+These folks make high-quality and well-maintained images for their own and
+other tools.
 
 ## Artwork
 
