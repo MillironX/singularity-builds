@@ -6,10 +6,7 @@
 [![Docs](https://img.shields.io/static/v1?label=Docs&message=web&color=blue&style=flat-square)](https://docs.julialang.org/en/v1.6.2/)
 [![Alpine base](https://img.shields.io/static/v1?label=Base%20image&message=Alpine&color=0d597f&logo=alpinelinux&style=flat-square)](https://www.alpinelinux.org/)
 
-Julia is a high-level dynamic programming language designed to address the
-needs of high-performance numerical analysis and computational science. It
-provides a sophisticated compiler, distributed parallel execution, numerical
-accuracy, and an extensive mathematical function library.
+Julia is a high-level dynamic programming language designed to address the needs of high-performance numerical analysis and computational science. It provides a sophisticated compiler, distributed parallel execution, numerical accuracy, and an extensive mathematical function library.
 
 ## Tools installed
 
