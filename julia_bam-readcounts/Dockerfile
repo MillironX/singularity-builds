@@ -8,6 +8,7 @@ RUN set -eux; \
 		ca-certificates \
 # ERROR: no download agent available; install curl, wget, or fetch
 		curl \
+		git \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
