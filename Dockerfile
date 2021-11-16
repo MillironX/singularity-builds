@@ -14,6 +14,7 @@ RUN \
     bash \
     libbz2 \
     ncurses \
+    openblas-dev \
     py3-pip \
     python3 \
     xz \
@@ -36,7 +37,6 @@ RUN \
     make \
     musl-dev \
     ncurses-dev \
-    openblas-dev \
     py-pip \
     python3-dev \
     wget \
