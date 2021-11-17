@@ -1,5 +1,15 @@
 FROM alpine:3.14.3
 
+LABEL base.image="alpine:3.14.3"
+LABEL software="NanoSim"
+LABEL software.version="3.0.2"
+LABEL dockerfile.version="3"
+LABEL description="Fast and scalable read simulator that captures the technology-specific features of ONT data."
+LABEL website="https://github.com/bcgsc/NanoSim"
+LABEL license="https://github.com/bcgsc/NanoSim/blob/master/LICENSE"
+LABEL maintainer="Thomas A. Christensen II"
+LABEL maintainer.email="25492070+MillironX@users.noreply.github.com"
+
 ARG NANOSIM_VERSION=3.0.2
 ARG MINIMAP2_VERSION=2.18
 ARG LAST_VERSION=916
