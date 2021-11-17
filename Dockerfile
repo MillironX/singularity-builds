@@ -40,8 +40,7 @@ RUN \
     py3-threadpoolctl \
     py3-numpy \
     py3-numpy-dev \
-    py3-scipy \
-    py3-scikit-learn && \
+    py3-scipy && \
 \
   # Install build dependencies
   apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
@@ -114,6 +113,7 @@ RUN \
   cd && \
 \
   # Download and install Python packages from pip
+  pip3 install -v --no-cache-dir scikit-learn==0.21.3 && \
   pip3 install -v --no-cache-dir pysam==0.17 && \
   pip3 install -v --no-cache-dir HTSeq==0.11.2 && \
   pip3 install -v --no-cache-dir pybedtools==0.8.2 && \
