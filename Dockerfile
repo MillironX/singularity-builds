@@ -26,9 +26,22 @@ RUN \
     ncurses \
     openblas-dev \
     py3-pip \
+    py3-wheel \
     python3 \
+    cython \
     xz \
     zlib && \
+\
+  # Install Python packages available from apk
+  apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    --update --no-cache \
+    py3-six \
+    py3-joblib \
+    py3-threadpoolctl \
+    py3-numpy \
+    py3-numpy-dev \
+    py3-scipy \
+    py3-scikit-learn && \
 \
   # Install build dependencies
   apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
@@ -100,14 +113,7 @@ RUN \
   rm -rf v${GENOMETOOLS_VERSION} && \
   cd && \
 \
-  # Download and install Python packages
-  pip3 install -v --no-cache-dir six==1.16.0 && \
-  pip3 install -v --no-cache-dir joblib==0.14.1 && \
-  pip3 install -v --no-cache-dir threadpoolctl && \
-  pip3 install -v --no-cache-dir numpy==1.17.2 && \
-  pip3 install -v --no-cache-dir scipy && \
-  pip3 install -v --no-cache-dir cython && \
-  pip3 install -v --no-cache-dir scikit-learn==0.21.3 && \
+  # Download and install Python packages from pip
   pip3 install -v --no-cache-dir pysam==0.17 && \
   pip3 install -v --no-cache-dir HTSeq==0.11.2 && \
   pip3 install -v --no-cache-dir pybedtools==0.8.2 && \
@@ -122,4 +128,5 @@ RUN \
   cd .. && \
 \
   # Cleanup build packages
-  apk del --no-cache .build-deps
+  apk del --no-cache .build-deps && \
+  rm -vrf /var/cache/apk/*
