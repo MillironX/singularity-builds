@@ -1,9 +1,9 @@
-FROM alpine:3.14.3
+FROM ubuntu:focal
 
-LABEL base.image="alpine:3.14.3"
+LABEL base.image="ubuntu:focal"
 LABEL software="NanoSim"
 LABEL software.version="3.0.2"
-LABEL dockerfile.version="3"
+LABEL dockerfile.version="4"
 LABEL description="Fast and scalable read simulator that captures the technology-specific features of ONT data."
 LABEL website="https://github.com/bcgsc/NanoSim"
 LABEL license="https://github.com/bcgsc/NanoSim/blob/master/LICENSE"
@@ -17,62 +17,44 @@ ARG LAST_SHA="98fc3d382ef443b4468b633d2fe90ac3d0b3c21e"
 ARG SAMTOOLS_VERSION=1.12
 ARG GENOMETOOLS_VERSION=1.6.2
 
+ENV DEBIAN_FRONTEND noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN true
+
 RUN \
   # Install real dependencies
-  apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-  --update --no-cache \
-    bash \
-    libbz2 \
-    ncurses \
-    openblas-dev \
-    py3-pip \
-    py3-wheel \
-    python3 \
-    cython \
-    xz \
-    zlib && \
-\
-  # Install Python packages available from apk
-  apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
-    --update --no-cache \
-    py3-six \
-    py3-joblib \
-    py3-threadpoolctl \
-    py3-numpy \
-    py3-numpy-dev \
-    py3-scipy && \
-\
-  # Install build dependencies
-  apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-    --no-cache --virtual .build-deps \
-    blas-dev \
-    build-base \
-    bzip2-dev \
-    freetype-dev \
-    g++ \
+  apt-get update && \
+  apt-get install --no-install-recommends -y \
+    build-essential \
+    bzip2 \
+    ca-certificates \
+    curl \
+    cython3 \
     gcc \
-    gfortran \
     git \
-    lapack-dev \
-    libgfortran \
-    libpng-dev \
+    gnuplot \
+    libbz2-dev \
+    libcurl4-gnutls-dev \
+    liblzma-dev \
+    libncurses5-dev \
+    libssl-dev \
     make \
-    musl-dev \
-    ncurses-dev \
-    py-pip \
+    perl \
+    python3 \
+    python3-pip \
     python3-dev \
-    wget \
-    xz-dev \
-    zlib-dev &&\
-\
+    zlib1g-dev \
+  && \
+  apt-get autoclean && rm -rf /var/lib/apt/lists/*
+
+RUN \
   # Make python3 the default
-  ln -fs /usr/include/locale.h /usr/include/xlocale.h && \
-  ln -fs /usr/bin/python3 /usr/local/bin/python && \
-  ln -fs /usr/bin/pip3 /usr/local/bin/pip && \
-\
+  update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
+  update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+
+RUN \
   # Download and install Minimap2
   cd /tmp && \
-  wget -qO- https://github.com/lh3/minimap2/releases/download/v${MINIMAP2_VERSION}/minimap2-${MINIMAP2_VERSION}.tar.bz2 | tar xjv && \
+  curl -L https://github.com/lh3/minimap2/releases/download/v${MINIMAP2_VERSION}/minimap2-${MINIMAP2_VERSION}.tar.bz2 | tar xjv && \
   cd minimap2-${MINIMAP2_VERSION} && \
   make && \
   cp minimap2 /usr/bin && \
@@ -80,8 +62,9 @@ RUN \
   cp minimap2.1 /usr/man && \
   cd .. && \
   rm -rf minimap2-${MINIMAP2_VERSION} && \
-  cd && \
-\
+  cd
+
+RUN \
   # Download and install LAST
   cd /tmp && \
   git clone https://gitlab.com/mcfrith/last.git && \
@@ -90,43 +73,47 @@ RUN \
   make && make install && \
   cd .. && \
   rm -rf last && \
-  cd && \
-\
+  cd
+
+RUN \
   # Download and install samtools
   cd /tmp && \
-  wget https://github.com/samtools/samtools/releases/download/$SAMTOOLS_VERSION/samtools-$SAMTOOLS_VERSION.tar.bz2 && \
-  tar xjvf samtools-$SAMTOOLS_VERSION.tar.bz2 && \
+  curl -L https://github.com/samtools/samtools/releases/download/$SAMTOOLS_VERSION/samtools-$SAMTOOLS_VERSION.tar.bz2 | tar xvj && \
   cd samtools-$SAMTOOLS_VERSION && \
   ./configure && \
   make && make install && \
   cd .. && \
-  rm -rf samtools-$SAMTOOLS_VERSION* && \
-  cd && \
-\
+  rm -rf samtools-$SAMTOOLS_VERSION && \
+  cd
+
+RUN \
   # Download and install GenomeTools
   cd /tmp && \
-  wget -qO- https://github.com/genometools/genometools/archive/refs/tags/v${GENOMETOOLS_VERSION}.tar.gz | tar xzv && \
+  curl -L https://github.com/genometools/genometools/archive/refs/tags/v${GENOMETOOLS_VERSION}.tar.gz | tar xzv && \
   cd genometools-${GENOMETOOLS_VERSION} && \
   make cairo=no errorcheck=no && make cairo=no errorcheck=no install && \
   cd .. && \
   rm -rf v${GENOMETOOLS_VERSION} && \
-  cd && \
-\
-  # Download and install Python packages from pip
-  pip3 install -v --no-cache-dir scikit-learn==0.21.3 && \
-  pip3 install -v --no-cache-dir pysam==0.17 && \
-  pip3 install -v --no-cache-dir HTSeq==0.11.2 && \
-  pip3 install -v --no-cache-dir pybedtools==0.8.2 && \
-\
+  cd
+
+# Download and install Python packages from pip
+RUN pip3 install -v --no-cache-dir six==1.16.0
+RUN pip3 install -v --no-cache-dir joblib==0.14.1
+RUN pip3 install -v --no-cache-dir numpy==1.17.2
+RUN pip3 install -v --no-cache-dir scipy==1.4.1
+RUN pip3 install -v --no-cache-dir scikit-learn==0.21.3
+RUN pip3 install -v --no-cache-dir pysam==0.17
+RUN pip3 install -v --no-cache-dir HTSeq==0.11.2
+RUN pip3 install -v --no-cache-dir pybedtools==0.8.2
+
+RUN \
   # Download and install NanoSim
   cd /tmp && \
-  wget -qO- https://github.com/bcgsc/NanoSim/archive/refs/tags/v${NANOSIM_VERSION}.tar.gz | tar xzv && \
+  curl -L https://github.com/bcgsc/NanoSim/archive/refs/tags/v${NANOSIM_VERSION}.tar.gz | tar xzv && \
   cd NanoSim-${NANOSIM_VERSION} && \
   cp -r src/* /usr/bin && \
   cd .. && \
   rm -rf NanoSim-${NANOSIM_VERSION} && \
-  cd .. && \
-\
-  # Cleanup build packages
-  apk del --no-cache .build-deps && \
-  rm -vrf /var/cache/apk/*
+  cd ..
+
+ENTRYPOINT [ "/usr/bin/simulator.py" ]

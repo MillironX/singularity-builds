@@ -4,7 +4,7 @@
 [![NanoSim source](https://img.shields.io/static/v1?label=NanoSim%20Source&message=GitHub&color=lightgrey&logo=github&style=flat-square)](https://github.com/bcgsc/NanoSim)
 [![Version 3.0.2](https://img.shields.io/static/v1?label=Latest%20version&message=3.0.2&color=yellowgreen&logo=linuxcontainers&style=flat-square)](https://cloud.sylabs.io/library/millironx/default/nanosim)
 [![Docs](https://img.shields.io/static/v1?label=Docs&message=README&color=blue&style=flat-square)](https://github.com/bcgsc/NanoSim/blob/master/README.md)
-[![Alpine base](https://img.shields.io/static/v1?label=Base%20image&message=Alpine&color=0d597f&logo=alpinelinux&style=flat-square)](https://www.alpinelinux.org/)
+[![Ubuntu base](https://img.shields.io/static/v1?label=Base%20image&message=Ubuntu&color=e95420&logo=ubuntu&style=flat-square)](https://ubuntu.com/)
 
 NanoSim is a fast and scalable read simulator that captures the
 technology-specific features of ONT data, and allows for adjustments upon
